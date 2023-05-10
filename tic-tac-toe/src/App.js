@@ -3,10 +3,9 @@ import { useState } from "react";
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const [isDescending, setIsDescending] = useState(true);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
-
-  let isDecending = true;
 
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
@@ -19,7 +18,9 @@ export default function Game() {
   }
 
   function sortHistory() {
-    isDecending = !isDecending;
+
+    setIsDescending(!isDescending);
+    moves.reverse();
   }
 
   let moves = history.map((move) => {
@@ -43,11 +44,12 @@ export default function Game() {
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
-        <ol>{isDecending ? moves : moves.reverse()}</ol>
-        <ol>{"You are at move #" + history.length}</ol>
         <button onClick={() => sortHistory()}>
-          Sort by: {isDecending ? "Decending" : "Asending"}
+          Sort by: {isDescending ? "Descending" : "Asending"}
         </button>
+        <ol>{isDescending ? moves : moves.reverse()}</ol>
+        <ol>{"You are at move #" + history.length}</ol>
+        
       </div>
     </div>
   );

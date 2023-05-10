@@ -23,11 +23,61 @@ export default function Game() {
     moves.reverse();
   }
 
+  function findDifference(array1, array2){
+    for (let i = 0; i < array1.length; i++){
+      if (array1[i] !== array2[i] && array1[i] === null){
+        return i;
+      }
+    }
+  }
+
+  function findColumnRow(position){
+    let columnRow = "( , )";
+    switch(position) {
+      case (0):
+        columnRow = "(1, 1)"
+        break;
+      case (1):
+        columnRow = "(1, 2)"
+        break;
+      case (2):
+        columnRow = "(1, 3)"
+        break;
+      case (3):
+        columnRow = "(2, 1)"
+        break;
+      case (4):
+        columnRow = "(2, 2)"
+        break;
+      case (5):
+        columnRow = "(2, 3)"
+        break;
+      case (6):
+        columnRow = "(3, 1)"
+        break;
+      case (7):
+        columnRow = "(3, 2)"
+        break;
+      case (8):
+        columnRow = "(3, 3)"
+        break;
+      default:
+        // code block
+    }
+    return columnRow;
+  }
   let moves = history.map((move) => {
   console.log(move);
+  let move1 = history.slice(history.length -1);
+  let move2 = history.slice(history.length);
+
+  let position = findDifference(move1, move2);
+
+  let columnRow = findColumnRow(position);
+
   let description;
     (move.includes("X") || move.includes("O"))
-      ? (description = "Go to move #" + history.indexOf(move))
+      ? (description = "Go to move #" + history.indexOf(move) + " " + {columnRow})
       : (description = "Go to game start");
     return (
       <div>

@@ -23,14 +23,15 @@ export default function Game() {
   }
 
   let moves = history.map((move) => {
+  console.log(move);
   let description;
-    move > 0
-      ? (description = "Go to move #" + move)
+    (move.includes("X") || move.includes("O"))
+      ? (description = "Go to move #" + history.indexOf(move))
       : (description = "Go to game start");
     return (
       <div>
         <li key={move}>
-          <button onClick={() => jumpTo(move)}>{description}</button>
+          <button onClick={() => jumpTo(history.indexOf(move))}>{description}</button>
         </li>
       </div>
     );
@@ -70,36 +71,34 @@ function Board({ xIsNext, squares, onPlay }) {
     ? (status = "Winner:" + winner)
     : (status = "Next Player: " + (xIsNext ? "X" : "O"));
 
-  function createSquare(currentMove, position) {
+  function createSquare(position) {
     return (
       <Square
         key={position}
-        value={currentMove[position]}
+        value={squares[position]}
         onSquareClick={() => handleClick(position)}
       />
     );
   }
-  function createSquares(currentMove, rowNumber) {
+  function createSquares(rowNumber) {
     const squaresArr = [];
     for (let i = 0; i < 3; i++) {
-      
-      squaresArr.push(createSquare((currentMove, rowNumber * 3) + i));
+      squaresArr.push(createSquare((rowNumber * 3) + i));
     }
     return squaresArr;
   }
 
-  function createBoard(currentMove) {
+  function createBoard() {
     const rows = [];
     for (let i = 0; i < 3; i++) {
-      rows.push(<div className="board-row">{createSquares(currentMove, i)}</div>);
-      currentMove.
+      rows.push(<div key={i} className="board-row">{createSquares(i)}</div>);
     }
     return rows;
   }
   return (
     <>
       <div className="status">{status}</div>
-      {createBoard(squares)}
+      {createBoard()}
     </>
   );
 }

@@ -4,12 +4,15 @@ export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const [isDescending, setIsDescending] = useState(true);
+  const [positionHist, setPositionHist] = useState([Array(9).fill(null)]); // Save each new position in an array and call later based on move number?
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
-  function handlePlay(nextSquares) {
+  function handlePlay(nextSquares, position) {
     const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    const nextPosition = [...positionHist.slice(0, currentMove + 1), findPosition(position)];
     setHistory(nextHistory);
+    setPositionHist(nextPosition)
     setCurrentMove(nextHistory.length - 1);
   }
 
@@ -23,62 +26,42 @@ export default function Game() {
     moves.reverse();
   }
 
-  function findDifference(array1, array2){
-    for (let i = 0; i < array1.length; i++){
-      if (array1[i] !== array2[i] && array1[i] === null){
-        return i;
-      }
+  function findPosition(position){
+    let columnRowValue = ""
+
+    if (position === 0) {
+      columnRowValue = "(1, 1)"
+    } else if (position === 1){
+      columnRowValue = "(1, 2)"
+    } else if (position === 2){
+      columnRowValue = "(1, 3)"
+    }else if (position === 3){
+      columnRowValue = "(2, 1)"
+    }else if (position === 4){
+      columnRowValue = "(2, 2)"
+    }else if (position === 5){
+      columnRowValue = "(2, 3)"
+    }else if (position === 6){
+      columnRowValue = "(3, 1)"
+    }else if (position === 7){
+      columnRowValue = "(3, 2)"
+    }else if (position === 8){
+      columnRowValue = "(3, 3)"
+    }else {
+      columnRowValue = "( , )"
     }
+    return columnRowValue;
   }
 
-  function findColumnRow(position){
-    let columnRow = "( , )";
-    switch(position) {
-      case (0):
-        columnRow = "(1, 1)"
-        break;
-      case (1):
-        columnRow = "(1, 2)"
-        break;
-      case (2):
-        columnRow = "(1, 3)"
-        break;
-      case (3):
-        columnRow = "(2, 1)"
-        break;
-      case (4):
-        columnRow = "(2, 2)"
-        break;
-      case (5):
-        columnRow = "(2, 3)"
-        break;
-      case (6):
-        columnRow = "(3, 1)"
-        break;
-      case (7):
-        columnRow = "(3, 2)"
-        break;
-      case (8):
-        columnRow = "(3, 3)"
-        break;
-      default:
-        // code block
-    }
-    return columnRow;
-  }
   let moves = history.map((move) => {
-  console.log(move);
-  let move1 = history.slice(history.length -1);
-  let move2 = history.slice(history.length);
-
-  let position = findDifference(move1, move2);
-
-  let columnRow = findColumnRow(position);
 
   let description;
-    (move.includes("X") || move.includes("O"))
-      ? (description = "Go to move #" + history.indexOf(move) + " " + {columnRow})
-      : (description = "Go to game start");
+    if (move.includes("X") || move.includes("O")){
+      let columnRowValue = positionHist[history.indexOf(move)] 
+      description = "Go to move #" + history.indexOf(move) + " " + columnRowValue 
+    }else{
+      description = "Go to game start"
+    }
     return (
       <div>
         <li key={move}>
@@ -98,7 +81,7 @@ export default function Game() {
           Sort by: {isDescending ? "Descending" : "Asending"}
         </button>
         <ol>{isDescending ? moves : moves.reverse()}</ol>
-        <ol>{"You are at move #" + history.length}</ol>
+        <ol>{"You are at move #" + (history.length)}</ol>
         
       </div>
     </div>
@@ -114,7 +97,7 @@ function Board({ xIsNext, squares, onPlay }) {
 
     const nextSquares = squares.slice();
     xIsNext ? (nextSquares[i] = "X") : (nextSquares[i] = "O");
-    onPlay(nextSquares);
+    onPlay(nextSquares, i);
   }
 
   const winner = CalculateWinner(squares);
@@ -183,12 +166,9 @@ function CalculateWinner(squares) {
   ];
 
   for (let i = 0; i < lines.length; i++) {
-    let array = [];
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {;
-      array.push(squares[a]);
-      array.push(lines[i]);
-      return array;
+      return [squares[a], lines[i]];
     }
 
   }
